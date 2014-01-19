@@ -1,9 +1,9 @@
 showexpl
 ========
 
-The LaTeX package `showexpl' provides a way to typeset LaTeX source code and
+The LaTeX package 'showexpl' provides a way to typeset LaTeX source code and
 the related result in the same document. The `listings' package is required.
-See `doc/showexpl-test.tex' for the details.
+See 'doc/showexpl-test.tex' for the details.
 
 Recommended TDS locations:
 ```
