@@ -6,7 +6,7 @@
 MAIN = showexpl
 
 VERSION = $(shell awk -F"[[]" \
-  '/ProvidesPackage/ {split($$2,a," ");gsub("/","-",a[1]);printf "%s", a[1]}' \
+  '/Typesetting example code/ {split($$2,a," ");gsub("/","-",a[1]);printf "%s", a[1]}' \
   $(MAIN).dtx)
 
 DIST_DIR1 = $(MAIN)
@@ -62,7 +62,7 @@ README : README.md
      /is also/ {exit} \
      {print}' > $@
 
-dist :
+dist : all
 	mkdir -p $(DIST_DIR1)
 	mkdir -p $(DIST_DIR2)
 	cp -p $(DIST_FILES1) $(DIST_DIR1)

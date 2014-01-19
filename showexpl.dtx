@@ -22,7 +22,7 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
 %<package>\ProvidesPackage{showexpl}
 %<*package>
-    \ProvidesPackage{showexpl}[2013/03/21 v0.3k Typesetting example code (RN)]
+    [2014/01/19 v0.3l Typesetting example code (RN)]
 %</package>
 %
 %<*driver>
@@ -39,7 +39,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{845}
+% \CheckSum{870}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -245,8 +245,13 @@
 \lst@Key{wide}f[t]{\lstKV@SetIf{#1}\if@SX@wide}
 \lst@Key{rframe}\relax{\def\SX@rframe{#1}}
 \lst@Key{preset}\relax{\def\SX@preset{#1}}
+\newcommand*\SX@scaled{}
+\lst@Key{scaled}{?}[!]{\def\SX@scaled{#1}}
 %    \end{macrocode}
-% \changes{v0.1h}{2005/06/03}{``lstpreset'' renamed to ``explpreset'' (RN).}
+% \changes{v0.1h}{2005/06/03}{``lstpreset'' renamed to ``explpreset'' 
+% (RN).}
+% \changes{v0.3l}{2014/01/19}{Option ``scaled'' and \cmd{\SX@scaled} 
+% added (RN).}
 %    \begin{macrocode}
 \lst@Key{explpreset}\relax{\def\SX@explpreset{#1}}
 \lst@Key{codefile}\relax{\def\SX@codefile{#1}}
@@ -650,6 +655,7 @@
 % \cmd{\makeatother} added (RN).}
 % \changes{v0.3c}{2005/10/15}{Wrong catcode for newline char corrected (RN).}
 % \changes{v0.3d}{2005/12/06}{Missing \cs{par} added (RN).}
+% \changes{v0.3l}{2014/01/19}{Code for ``scaled'' option (RN).}
 %    \begin{macrocode}
 \newcommand*\SX@resultInput{%
   \ifx\SX@graphicname\@empty
@@ -661,7 +667,16 @@
       \else
        \let\SX@tempa=\input
       \fi
-      \SX@tempa{\SX@codefile}\par%
+      \if\SX@scaled ?%
+        \let\SX@tempb=\@firstofone
+      \else
+        \if\SX@scaled !%
+          \def\SX@tempb##1{\resizebox{\SX@width}{!}{##1}}%
+        \else
+          \def\SX@tempb##1{\scalebox{\SX@scaled}{##1}}%
+        \fi
+      \fi
+      \SX@tempb{\SX@tempa{\SX@codefile}}\par
     \endgroup
   \else
     \expandafter\includegraphics\expandafter[\SX@graphicparam]%
