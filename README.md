@@ -16,7 +16,7 @@ http://www.tex.ac.uk/cgi-bin/texfaq2html?label=instpackages
 
 The showexpl document class is also on CTAN:[macros/latex/contrib/showexpl](http://www.ctan.org/tex-archive/macros/latex/contrib/showexpl)
 
-Rolf Niepraschk
+Rolf Niepraschk,
 email: Rolf.Niepraschk@gmx.de
 2014-01-19
 
