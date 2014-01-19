@@ -5,16 +5,26 @@
 
 MAIN = showexpl
 
+VERSION = $(shell awk -F"[[]" \
+  '/ProvidesPackage/ {split($$2,a," ");gsub("/","-",a[1]);printf "%s", a[1]}' \
+  $(MAIN).dtx)
+
+DIST_DIR1 = $(MAIN)
+DIST_DIR2 = $(MAIN)/doc
+
+DIST_FILES1 = README $(MAIN).dtx $(MAIN).ins
+DIST_FILES2 = $(MAIN).pdf doc/$(MAIN)-test.tex doc/$(MAIN)-test.pdf \
+  doc/result-picture.pdf
+
+
+
 PDFLATEX = pdflatex
 
 LATEX = latex
 
-#ARCHNAME = $(MAIN)-$(shell date +"%y%m%d-%H%M")
-ARCHNAME = $(MAIN)-$(shell date +"%y%m%d")
+ARCHNAME = $(MAIN)-$(VERSION).zip
 
 EXAMPLE = doc/$(MAIN)-test.tex
-
-ARCHFILES = $(MAIN).ins $(MAIN).dtx  Makefile $(EXAMPLE)
 
 all : pdf doc README
 
@@ -27,21 +37,16 @@ doc : $(MAIN).pdf
 doc/$(MAIN)-test.pdf : doc/$(MAIN)-test.tex $(MAIN).sty doc/result-picture.pdf
 	$(MAKE) -C doc
 
+debug :
+	@echo ">"$(VERSION)"<"
+	@echo ">"$(ARCHNAME)"<"
+
 $(MAIN).sty : $(MAIN).ins $(MAIN).dtx
 	tex $<
 	mv $(basename $<).log $<.log
 
 %.ps : %.dvi
 	dvips -o $@ $<
-
-$(MAIN).dvi : $(MAIN).dtx $(MAIN).sty
-	if ! test -f $(basename $<).glo ; then touch $(basename $<).glo; fi
-	if ! test -f $(basename $<).idx ; then touch $(basename $<).idx; fi
-	makeindex -s gglo.ist -t $(basename $<).glg -o $(basename $<).gls \
-		$(basename $<).glo
-	makeindex -s gind.ist -t $(basename $<).ilg -o $(basename $<).ind \
-		$(basename $<).idx
-	$(LATEX) $<
 
 $(MAIN).pdf : $(MAIN).dtx $(MAIN).sty
 	if ! test -f $(basename $<).glo ; then touch $(basename $<).glo; fi
@@ -57,6 +62,13 @@ README : README.md
      /is also/ {exit} \
      {print}' > $@
 
-arch :
-	zip $(ARCHNAME).zip $(ARCHFILES)
+dist :
+	mkdir -p $(DIST_DIR1)
+	mkdir -p $(DIST_DIR2)
+	cp -p $(DIST_FILES1) $(DIST_DIR1)
+	cp -p $(DIST_FILES2) $(DIST_DIR2)
+	rm -f $(ARCHNAME)
+	zip $(ARCHNAME) -r $(DIST_DIR1)
+	rm -rf $(DIST_DIR1)
+
 
