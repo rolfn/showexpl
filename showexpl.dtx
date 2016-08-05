@@ -22,7 +22,7 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
 %<package>\ProvidesPackage{showexpl}
 %<*package>
-    [2014/01/19 v0.3l Typesetting example code (RN)]
+    [2016/08/05 v0.3m Typesetting example code (RN)]
 %</package>
 %
 %<*driver>
@@ -39,7 +39,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{870}
+% \CheckSum{873}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -519,11 +519,13 @@
         \parbox{\linewidth+\SX@overhang}{%
 %    \end{macrocode}
 % \cmd{\SX@codefile} (|\jobname.tmp|) is not nessesary for the filelist.
+% \changes{v0.3m}{2016/08/05}{Wrong assignement for \cmd{\lst@belowskip} (RN).}      
 %    \begin{macrocode}
           \let\@addtofilelist\@gobble
           \let\lst@ifdisplaystyle=\iftrue
           \SX@KillAboveCaptionskip\lst@MakeCaption{t}%
           \lst@belowskip=\z@
+          \let\lst@belowskip=\z@
 %    \end{macrocode}
 % Use the ``natural'' width of the result code if ``varwidth'' is
 % true.
