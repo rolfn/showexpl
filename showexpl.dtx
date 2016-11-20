@@ -1,6 +1,6 @@
 % \iffalse meta-comment
 %
-% Copyright (C) 2004 -- 2006 by Rolf Niepraschk <Rolf.Niepraschk@gmx.de>
+% Copyright (C) 2004 -- 2016 by Rolf Niepraschk <Rolf.Niepraschk@gmx.de>
 % --------------------------------------------------------------------
 %
 % This file may be distributed and/or modified under the
@@ -22,7 +22,7 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
 %<package>\ProvidesPackage{showexpl}
 %<*package>
-    [2016/08/05 v0.3m Typesetting example code (RN)]
+    [2016/11/20 v0.3n Typesetting example code (RN)]
 %</package>
 %
 %<*driver>
@@ -39,7 +39,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{873}
+% \CheckSum{891}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -182,7 +182,7 @@
 %   \item[varwidth] Boolean valued key, default value is false. If set to
 %   true, the formatted text is set with its ``natural'' width instead of a
 %   fixed width as given by the value of the option |width|.
-%   \item[hsep] Defines the vertical distance between the source code and the
+%   \item[vsep] Defines the vertical distance between the source code and the
 %   formatted text.
 %   \item[wide] Boolean valued key, default value is false. If set to
 %   true, the source code and the formatted text overlap the print space
@@ -190,10 +190,18 @@
 %   \item[width] A \meta{dimen} value that defines the width of the
 %   formatted text. The default value depends of the relative positions of
 %   the source code and the formatted text.
-%   \item[scaled] Without a value the formatted text will be scaled to fit 
-%   the given width of the result area. With a number as value the formatted 
+%   \item[scaled] Without a value the formatted text will be scaled to fit
+%   the given width of the result area. With a number as value the formatted
 %   text will be scaled by this number.
 % \end{description}
+%
+% In addition to these options the kind of the result box (default: |\fbox|)
+% can be changed. For example:
+% \begin{verbatim}
+%   \renewcommand\ResultBox{\fcolorbox{green}{lightgray}}
+%   \setlength\ResultBoxSep{5mm}
+%   \setlength\ResultBoxRule{2mm}
+% \end{verbatim}
 %
 % \StopEventually{}
 %
@@ -251,9 +259,9 @@
 \newcommand*\SX@scaled{}
 \lst@Key{scaled}{?}[!]{\def\SX@scaled{#1}}
 %    \end{macrocode}
-% \changes{v0.1h}{2005/06/03}{``lstpreset'' renamed to ``explpreset'' 
+% \changes{v0.1h}{2005/06/03}{``lstpreset'' renamed to ``explpreset''
 % (RN).}
-% \changes{v0.3l}{2014/01/19}{Option ``scaled'' and \cmd{\SX@scaled} 
+% \changes{v0.3l}{2014/01/19}{Option ``scaled'' and \cmd{\SX@scaled}
 % added (RN).}
 %    \begin{macrocode}
 \lst@Key{explpreset}\relax{\def\SX@explpreset{#1}}
@@ -271,6 +279,7 @@
 % \changes{v0.2a}{2005/07/16}{``varwidth'' and ``justification'' added (RN).}
 % \changes{v0.1l}{2005/06/19}{``graphic'' added (RN).}
 % \changes{v0.3a}{2005/08/20}{``attachfile'' added (RN).}
+% \changes{v0.3n}{2016/11/20}{Define \cmd{\ResultBox} etc.}
 %    \begin{macrocode}
 \lst@Key{varwidth}f[t]{\lstKV@SetIf{#1}\if@SX@varwidth}
 \lst@Key{justification}\relax{\def\SX@justification{#1}}
@@ -283,6 +292,9 @@
   }%
 }%
 \newbox\SX@ResBox
+\newcommand\ResultBox{} \let\ResultBox=\fbox
+\newdimen\ResultBoxSep  \ResultBoxSep=\fboxsep
+\newdimen\ResultBoxRule \ResultBoxRule=\fboxrule
 \newcommand*\SX@pos{}
 \newcommand*\SX@width{}
 \newcommand*\SX@hsep{}
@@ -425,11 +437,11 @@
 %    \end{macrocode}
 % \end{macro}
 %
-% \begin{environment}{LTXexample}
 % \changes{v0.1h}{2005/06/03}{Renamed from ``example'' to ``LTXexample' (RN).}
+% \changes{v0.3n}{2016/11/20}{Prevent utf8 encoding errors}
+% \begin{environment}{LTXexample}
 %    \begin{macrocode}
-\lstnewenvironment{LTXexample}[1][]
-{%
+\lstnewenvironment{LTXexample}[1][]{%
   \@temptokena{#1}%
   \begingroup
 %    \end{macrocode}
@@ -445,11 +457,13 @@
   \x
   \xdef\SX@@explpreset{\the\@temptokena,codefile=\SX@codefile,
     graphic={[\SX@graphicparam]{\SX@graphicname}}}%
-  \setbox\@tempboxa=\hbox\bgroup% Warum noetig?
+  \begingroup
+  \let\UTFviii@defined=\@gobble
+  \let\@inpenc@undefined@=\@gobble
   \lst@BeginWriteFile{\SX@codefile}%
-}
+}%
 {%
-  \lst@EndWriteFile\egroup
+  \lst@EndWriteFile\endgroup
   \SX@put@code@result
 }
 %    \end{macrocode}
@@ -506,12 +520,13 @@
       \fi
 %    \end{macrocode}
 % Correct \cmd{\SX@width} if a frame is requested.
+% \changes{v0.3n}{2016/11/20}{Use \cmd{\ResultBox}}
 %    \begin{macrocode}
       \ifx\SX@rframe\@empty
         \long\def\SX@frame##1{##1}%
       \else
-        \let\SX@frame\fbox
-        \setlength\@tempdima{\SX@width-2\fboxsep-2\fboxrule}%
+        \let\SX@frame\ResultBox
+        \setlength\@tempdima{\SX@width-2\ResultBoxSep-2\ResultBoxRule}%
         \edef\SX@width{\the\@tempdima}%
       \fi
       \isSX@odd{\def\@tempa{l}}{\def\@tempa{r}}%
@@ -519,12 +534,11 @@
         \parbox{\linewidth+\SX@overhang}{%
 %    \end{macrocode}
 % \cmd{\SX@codefile} (|\jobname.tmp|) is not nessesary for the filelist.
-% \changes{v0.3m}{2016/08/05}{Wrong assignement for \cmd{\lst@belowskip} (RN).}      
+% \changes{v0.3m}{2016/08/05}{Wrong assignement for \cmd{\lst@belowskip} (RN).}
 %    \begin{macrocode}
           \let\@addtofilelist\@gobble
           \let\lst@ifdisplaystyle=\iftrue
           \SX@KillAboveCaptionskip\lst@MakeCaption{t}%
-          \lst@belowskip=\z@
           \let\lst@belowskip=\z@
 %    \end{macrocode}
 % Use the ``natural'' width of the result code if ``varwidth'' is
@@ -540,6 +554,8 @@
 %   varwidth environment. (Suggestions by Ulrike Fischer.).}
 %    \begin{macrocode}
           \setbox\SX@ResBox\hbox{%
+            \fboxsep=\ResultBoxSep
+            \fboxrule=\ResultBoxRule
             \SX@frame{%
               \@nameuse{\if@SX@varwidth varwidth\else minipage\fi}%
                   \SX@width\relax
