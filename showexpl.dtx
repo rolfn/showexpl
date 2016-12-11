@@ -22,7 +22,7 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
 %<package>\ProvidesPackage{showexpl}
 %<*package>
-    [2016/11/20 v0.3n Typesetting example code (RN)]
+    [2016/12/11 v0.3o Typesetting example code (RN)]
 %</package>
 %
 %<*driver>
@@ -39,7 +39,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{891}
+% \CheckSum{887}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -194,13 +194,12 @@
 %   the given width of the result area. With a number as value the formatted
 %   text will be scaled by this number.
 % \end{description}
-%
 % In addition to these options the kind of the result box (default: |\fbox|)
 % can be changed. For example:
 % \begin{verbatim}
 %   \renewcommand\ResultBox{\fcolorbox{green}{lightgray}}
-%   \setlength\ResultBoxSep{5mm}
-%   \setlength\ResultBoxRule{2mm}
+%   \setlength\ResultBoxSep{5mm}%  default: \fboxsep
+%   \setlength\ResultBoxRule{2mm}% default: \fboxrule
 % \end{verbatim}
 %
 % \StopEventually{}
@@ -448,22 +447,20 @@
 % For "codefile=..."/"graphic=..." if \cmd{\theltxexample} or
 % \cmd{\thelstlisting} is part of the filename.
 %    \begin{macrocode}
-    \advance\c@ltxexample\@ne \advance\c@lstlisting\@ne
-    \expandafter\lstset\expandafter{\SX@explpreset,#1}%
-    \edef\x{\endgroup
-      \def\noexpand\SX@codefile{\SX@codefile}%
-      \def\noexpand\SX@graphicname{\SX@graphicname}%
-      \def\noexpand\SX@graphicparam{\SX@graphicparam}}%
+  \advance\c@ltxexample\@ne \advance\c@lstlisting\@ne
+  \expandafter\lstset\expandafter{\SX@explpreset,#1}%
+  \edef\x{\endgroup
+    \def\noexpand\SX@codefile{\SX@codefile}%
+    \def\noexpand\SX@graphicname{\SX@graphicname}%
+    \def\noexpand\SX@graphicparam{\SX@graphicparam}}%
   \x
-  \xdef\SX@@explpreset{\the\@temptokena,codefile=\SX@codefile,
+  \xdef\SX@@explpreset{\the\@temptokena,codefile=\SX@codefile,%
     graphic={[\SX@graphicparam]{\SX@graphicname}}}%
-  \begingroup
-  \let\UTFviii@defined=\@gobble
-  \let\@inpenc@undefined@=\@gobble
+  \setbox\@tempboxa=\hbox\bgroup
   \lst@BeginWriteFile{\SX@codefile}%
-}%
+}
 {%
-  \lst@EndWriteFile\endgroup
+  \lst@EndWriteFile\egroup
   \SX@put@code@result
 }
 %    \end{macrocode}
@@ -539,7 +536,6 @@
           \let\@addtofilelist\@gobble
           \let\lst@ifdisplaystyle=\iftrue
           \SX@KillAboveCaptionskip\lst@MakeCaption{t}%
-          \let\lst@belowskip=\z@
 %    \end{macrocode}
 % Use the ``natural'' width of the result code if ``varwidth'' is
 % true.
@@ -729,8 +725,8 @@
       \g@addto@macro\SX@@explpreset{,xleftmargin=0pt,xrightmargin=0pt}%
     \fi
     \SX@Info
-    \expandafter\lstinputlisting\expandafter%
-      [\SX@@explpreset,nolol=true,caption={}]{\SX@codefile}%
+    \expandafter\lstinputlisting\expandafter[\SX@@explpreset,nolol=true,%
+      caption={},belowskip=\z@,aboveskip=\z@]{\SX@codefile}%
   \endgroup
 }%
 %    \end{macrocode}
