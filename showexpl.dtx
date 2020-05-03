@@ -22,7 +22,7 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
 %<package>\ProvidesPackage{showexpl}
 %<*package>
-    [2020/05/03 v0.3p Typesetting example code (RN)]
+    [2020/05/04 v0.3p Typesetting example code (RN)]
 %</package>
 %
 %<*driver>
@@ -39,7 +39,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{883}
+% \CheckSum{889}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -206,7 +206,7 @@
 %
 % \section{Implementation}
 % \changes{v0.1e}{2004/11/24}{Loading of |showexpl.cfg| added (RN).}
-% \changes{v0.3p}{2020/05/03}{Remove packages `calc' and `ifthen' (RN).}
+% \changes{v0.3p}{2020/05/04}{Remove package `calc' (RN).}
 %    \begin{macrocode}
 \DeclareOption{final}{%
   \PassOptionsToPackage{\CurrentOption}{graphicx}%
@@ -225,7 +225,7 @@
 }%
 \DeclareOption*{\PassOptionsToPackage{\CurrentOption}{listings}}
 \ProcessOptions\relax
-\RequirePackage{refcount,listings,graphicx,varwidth}
+\RequirePackage{refcount,listings,graphicx,varwidth,float}
 %    \end{macrocode}
 % We must aktivate code from package \textsf{listings} for writing files.
 %    \begin{macrocode}
@@ -317,13 +317,12 @@
 % typesetting the result of the example code. More can be added with
 % the user key ``|preset=...|''.
 % \changes{v0.3e}{2006/04/05}{More redefinitions added (RN).}
+% \changes{v0.3p}{2020/05/04}{Remove extra treatment of `figure'/`table' (RN).}
 %    \begin{macrocode}
 \newcommand*\SX@@preset{%
   \renewcommand\documentclass[2][]{\SX@eat@version}%
   \renewcommand\usepackage[2][]{\SX@eat@version}%
   \renewenvironment{document}{}{}%
-  \renewenvironment{figure}[1][]{\def\@captype{figure}}{}%
-  \renewenvironment{table}[1][]{\def\@captype{table}}{}%
   \renewcommand\cite[1][]{}%
   \let\tableofcontens\relax \let\listoffigures\relax
   \let\listoftables\relax \let\printindex\relax
@@ -345,6 +344,8 @@
 % \begin{macro}{\isSX@odd}
 %  Parameter |#1| is executed on odd pages, parameter |#2| on
 %  even pages.
+%  \changes{v0.3p}{2020/05/04}{Replace \cmd{\isodd} with
+%  \cmd{\ifodd}\cmd{\getpagerefnumber} (remove package `ifthen') (RN).}
 %    \begin{macrocode}
 \newif\ifSX@wasodd
 \if@twoside
@@ -363,7 +364,8 @@
     \fi
   }
 \else
-  \newcommand*\isSX@odd[2]{\SX@wasoddtrue #1}
+  \SX@wasoddtrue
+  \newcommand*\isSX@odd[2]{#1}
 \fi
 %    \end{macrocode}
 %  The call of \cmd{\isSX@odd} sets also \cmd{\ifSX@wasodd} to true or
@@ -488,19 +490,12 @@
 \newcommand*\SX@put@code@result{%
   \begingroup
     \expandafter\lstset\expandafter{\SX@explpreset}%
-    \let\lst@float=\relax\let\SX@float=\relax
-%    \end{macrocode}
-% Without the following call \cmd{\lst@beginfloat} is undefined.
-%    \begin{macrocode}
     \expandafter\lstset\expandafter{\SX@@explpreset}%
-    \ifx\lst@float\relax\else
 %    \end{macrocode}
-% \cmd{\lst@float} must be \cmd{\relax} because the whole ``example''
-% should float but not the listings part in addition.
+% Use listings floating procedure if necessary.
 %    \begin{macrocode}
-      \let\SX@float=\lst@float\let\lst@float=\relax
-      \g@addto@macro\SX@@explpreset{,float=false}%
-      \edef\@tempa{\noexpand\lst@beginfloat{lstlisting}[\SX@float]}%
+    \ifx\lst@float\relax\else
+      \edef\@tempa{\noexpand\lst@beginfloat{lstlisting}[\lst@float]}
       \expandafter\@tempa
     \fi
     \ifx\lst@caption\@empty
@@ -552,10 +547,7 @@
 % true.
 % \changes{v0.3k}{2013/03/21}{Setting \cmd{\lst@MakeCaption} to \cmd{\@gobble}
 %    again (prevent multiply defined labels; label key)}.
-%    \begin{macrocode}
-          \let\SX@MakeCaption\lst@MakeCaption
-          \let\lst@MakeCaption\@gobble{}
-%    \end{macrocode}
+% \changes{v0.3p}{2020/05/04}{Let's leave \cmd{\lst@MakeCaption} untouched (RN).}
 % \changes{v0.3j}{2012/09/22}{Setting \cmd{\lst@MakeCaption} to
 %    was a bad idea for hyperlinks. Group added to
 %   varwidth environment. (Suggestions by Ulrike Fischer.).}
@@ -575,12 +567,11 @@
             {\@latex@error{Parameter `\SX@pos' undefined}\@ehd}%
           {\@nameuse{SX@put@\SX@pos}%
             {\SX@width}{\box\SX@ResBox}{\SX@codeInput}}%
-          \let\lst@MakeCaption\SX@MakeCaption
           \lst@MakeCaption{b}\SX@KillBelowCaptionskip
         }%
       }%
     \endtrivlist
-    \ifx\SX@float\relax\else\expandafter\lst@endfloat\fi
+    \ifx\lst@float\relax\else\expandafter\lst@endfloat\fi
     \gdef\SX@@explpreset{}%
   \endgroup
 }
@@ -704,7 +695,24 @@
           \def\SX@tempb##1{\scalebox{\SX@scaled}{##1}}%
         \fi
       \fi
+      \let\SX@xfloat=\@xfloat
+      \let\SX@lst@Init=\lst@Init
+%    \end{macrocode}      
+%  Prevents float environments from floating. This is not enough for floating
+%  listing environments! Why?
+%  \changes{v0.3p}{2020/05/04}{Better handling of floats (RN).}
+%    \begin{macrocode}
+      \def\@xfloat##1[##2]{\@float@HH{##1}[H]}%
+%    \end{macrocode}
+%  Special handling of floating listing environments.
+%    \begin{macrocode}
+      \def\lst@Init{%
+        \let\lst@float=\relax
+        \SX@lst@Init
+      }
       \SX@tempb{\SX@tempa{\SX@codefile}}\par
+      \let\@xfloat=\SX@xfloat
+      \let\lst@Init=\SX@lst@Init
     \endgroup
   \else
     \expandafter\includegraphics\expandafter[\SX@graphicparam]%
@@ -737,7 +745,7 @@
     \fi
     \SX@Info
     \expandafter\lstinputlisting\expandafter[\SX@@explpreset,nolol=true,%
-      caption={},belowskip=\z@,aboveskip=\z@]{\SX@codefile}%
+      caption={},belowskip=\z@,aboveskip=\z@,float=false]{\SX@codefile}%
   \endgroup
 }%
 %    \end{macrocode}

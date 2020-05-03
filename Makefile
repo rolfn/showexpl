@@ -26,7 +26,7 @@ ARCHNAME = $(MAIN)-$(VERSION).zip
 
 EXAMPLE = doc/$(MAIN)-test.tex
 
-all : pdf doc README
+all : pdf doc
 
 pdf : $(EXAMPLE:.tex=.pdf)
 
@@ -56,11 +56,6 @@ $(MAIN).pdf : $(MAIN).dtx $(MAIN).sty
 	makeindex -s gind.ist -t $(basename $<).ilg -o $(basename $<).ind \
 		$(basename $<).idx
 	$(PDFLATEX) $<
-
-README : README.md
-	cat $< | awk '/^```/ {$$0=""} \
-     /is also/ {exit} \
-     {print}' > $@
 
 dist : all
 	mkdir -p $(DIST_DIR1)

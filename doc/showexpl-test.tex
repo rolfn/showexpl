@@ -1,36 +1,33 @@
 
-% Rolf Niepraschk, 2005-07-16, Rolf.Niepraschk@ptb.de
+% Rolf Niepraschk, 2020-05-03, Rolf.Niepraschk@gmx.de
 
 \listfiles\errorcontextlines=100
 \documentclass[a4paper,draft,twoside]{article}
 
 \usepackage[dvipsnames]{xcolor}
 \usepackage[textwidth=12cm,marginparwidth=4cm]{geometry}
-
 \usepackage[final]{showexpl}
 
-\usepackage[T1]{fontenc}
+\usepackage{iftex}
 
-\IfFileExists{luximono.sty}%
-{%
-  \usepackage[scaled]{luximono}%
-}
-{%
-  \IfFileExists{beramono.sty}%
-  {%
-    \usepackage[scaled]{beramono}%
-  }{}
-}
+\iftutex % LuaTeX, XeTeX
+  \usepackage{fontspec}
+  \setmonofont{DejaVuSansMono}[Scale=MatchUppercase]
+\else % old engines
+  \usepackage[T1]{fontenc}
+  \usepackage{lmodern}
+  \usepackage[scaled]{DejaVuSansMono}
+\fi
 
 \lstset{%
-    basicstyle=\ttfamily\small,
-    commentstyle=\itshape\ttfamily\small,
-    showspaces=false,
-    showstringspaces=false,
-    breaklines=true,
-    backgroundcolor=\color{lightgray},
-    breakautoindent=true,
-    captionpos=t
+  basicstyle=\ttfamily\small,
+  commentstyle=\itshape\ttfamily\small,
+  showspaces=false,
+  showstringspaces=false,
+  breaklines=true,
+  backgroundcolor=\color{lightgray},
+  breakautoindent=true,
+  captionpos=t
 }
 
 \iftrue
