@@ -1,5 +1,5 @@
 
-# Rolf Niepraschk, 2014-01-19, Rolf.Niepraschk@gmx.de
+# Rolf Niepraschk, 2020-05-03, Rolf.Niepraschk@gmx.de
 
 .SUFFIXES : .tex .ltx .dvi .ps .pdf .eps
 
@@ -12,11 +12,9 @@ VERSION = $(shell awk -F"[[]" \
 DIST_DIR1 = $(MAIN)
 DIST_DIR2 = $(MAIN)/doc
 
-DIST_FILES1 = README $(MAIN).dtx $(MAIN).ins
+DIST_FILES1 = README.md $(MAIN).dtx $(MAIN).ins
 DIST_FILES2 = $(MAIN).pdf doc/$(MAIN)-test.tex doc/$(MAIN)-test.pdf \
   doc/result-picture.pdf
-
-
 
 PDFLATEX = pdflatex
 
