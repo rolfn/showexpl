@@ -16,7 +16,8 @@ Recommended TDS locations:
 For general installation advice, see
 <http://www.tex.ac.uk/cgi-bin/texfaq2html?label=instpackages>
 
-The showexpl package is also on[CTAN:macros/latex/contrib/showexpl](http://www.ctan.org/tex-archive/macros/latex/contrib/showexpl)
+The showexpl package is also on
+CTAN:[macros/latex/contrib/showexpl](http://www.ctan.org/tex-archive/macros/latex/contrib/showexpl)
 
 Rolf Niepraschk,
 email: Rolf.Niepraschk@gmx.de,
