@@ -22,7 +22,7 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
 %<package>\ProvidesPackage{showexpl}
 %<*package>
-    [2016/12/11 v0.3o Typesetting example code (RN)]
+    [2020/05/03 v0.3p Typesetting example code (RN)]
 %</package>
 %
 %<*driver>
@@ -39,7 +39,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{887}
+% \CheckSum{883}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -206,6 +206,7 @@
 %
 % \section{Implementation}
 % \changes{v0.1e}{2004/11/24}{Loading of |showexpl.cfg| added (RN).}
+% \changes{v0.3p}{2020/05/03}{Remove packages `calc' and `ifthen' (RN).}
 %    \begin{macrocode}
 \DeclareOption{final}{%
   \PassOptionsToPackage{\CurrentOption}{graphicx}%
@@ -224,7 +225,7 @@
 }%
 \DeclareOption*{\PassOptionsToPackage{\CurrentOption}{listings}}
 \ProcessOptions\relax
-\RequirePackage{listings,calc,ifthen,graphicx,varwidth}
+\RequirePackage{refcount,listings,graphicx,varwidth}
 %    \end{macrocode}
 % We must aktivate code from package \textsf{listings} for writing files.
 %    \begin{macrocode}
@@ -347,11 +348,22 @@
 %    \begin{macrocode}
 \newif\ifSX@wasodd
 \if@twoside
-  \newcommand*{\isSX@odd}[2]{%
-    \ifthenelse{\isodd{\pageref{\SX@IDENT}}}%
-      {\SX@wasoddtrue #1}{\SX@wasoddfalse #2}}
+  \newcommand*\isSX@odd{%
+    \begingroup
+      \ifodd\getpagerefnumber{\SX@IDENT}%
+        \aftergroup\SX@wasoddtrue
+      \else
+        \aftergroup\SX@wasoddfalse
+      \fi
+    \endgroup
+    \ifSX@wasodd
+      \expandafter\@firstoftwo
+    \else
+      \expandafter\@secondoftwo
+    \fi
+  }
 \else
-  \newcommand*{\isSX@odd}[2]{#1}\SX@wasoddtrue
+  \newcommand*\isSX@odd[2]{\SX@wasoddtrue #1}
 \fi
 %    \end{macrocode}
 %  The call of \cmd{\isSX@odd} sets also \cmd{\ifSX@wasodd} to true or
@@ -388,20 +400,20 @@
 %    \begin{macrocode}
 \newcommand*\SX@put@t[3]{%
   \SX@ResultArea{\linewidth}{#2}\endgraf\pagebreak[2]%
-  \setlength\@tempdima{\SX@vsep}\vskip\@tempdima
+  \@tempdima=\dimexpr\SX@vsep\vskip\@tempdima
   \SX@CodeArea{\linewidth}{#3}%
 }
 \newcommand*\SX@put@b[3]{%
   \SX@CodeArea{\linewidth}{#3}\endgraf\pagebreak[2]%
-  \setlength\@tempdima{\SX@vsep}\vskip\@tempdima
+  \@tempdima=\dimexpr\SX@vsep\vskip\@tempdima
   \SX@ResultArea{\linewidth}{#2}%
 }
 \newcommand*\SX@put@l[3]{%
-  \setlength\@tempdimc{\linewidth-#1-\SX@hsep}%
+  \@tempdimc=\dimexpr\linewidth-#1-\SX@hsep % 
   \SX@ResultArea{#1}{#2}\hfill\SX@CodeArea{\@tempdimc}{#3}%
 }
 \newcommand*\SX@put@r[3]{%
-  \setlength\@tempdimc{\linewidth-#1-\SX@hsep}%
+  \@tempdimc=\dimexpr\linewidth-#1-\SX@hsep %
   \SX@CodeArea{\@tempdimc}{#3}\hfill\SX@ResultArea{#1}{#2}%
 }
 \newcommand*\SX@put@o[3]{%
@@ -411,12 +423,11 @@
   \@nameuse{SX@put@\ifSX@wasodd l\else r\fi}{#1}{#2}{#3}%
 }
 \newcommand\SX@ResultArea[2]{%
-  \SX@justification\setlength\@tempdima{#1}%
-  %\minipage\@tempdima#2\endminipage
+  \SX@justification\@tempdima=\dimexpr #1 %
   \parbox\@tempdima{#2}%
 }
 \newcommand\SX@CodeArea[2]{%
-  \setlength\@tempdima{#1}%
+  \@tempdima=\dimexpr #1 %
   \sbox\@tempboxa{\parbox\@tempdima{#2}}%
   \@tempdima=\dp\@tempboxa\usebox\@tempboxa
   \rlap{\raisebox{-\@tempdima}[0pt][0pt]{\SX@attachfile}}%
@@ -511,7 +522,7 @@
         \ifx\@tempa\SX@pos\@tempswafalse\fi
         \def\@tempa{b}%
         \ifx\@tempa\SX@pos\@tempswafalse\fi
-        \setlength\@tempdima{\linewidth+\SX@overhang}%
+        \@tempdima=\dimexpr\linewidth+\SX@overhang %
         \if@tempswa\@tempdima=.5\@tempdima\fi%
         \edef\SX@width{\the\@tempdima}%
       \fi
@@ -523,12 +534,12 @@
         \long\def\SX@frame##1{##1}%
       \else
         \let\SX@frame\ResultBox
-        \setlength\@tempdima{\SX@width-2\ResultBoxSep-2\ResultBoxRule}%
+        \@tempdima=\dimexpr\SX@width-2\ResultBoxSep-2\ResultBoxRule %
         \edef\SX@width{\the\@tempdima}%
       \fi
       \isSX@odd{\def\@tempa{l}}{\def\@tempa{r}}%
       \makebox[\linewidth][\@tempa]{%
-        \parbox{\linewidth+\SX@overhang}{%
+        \parbox{\dimexpr\linewidth+\SX@overhang}{%
 %    \end{macrocode}
 % \cmd{\SX@codefile} (|\jobname.tmp|) is not nessesary for the filelist.
 % \changes{v0.3m}{2016/08/05}{Wrong assignement for \cmd{\lst@belowskip} (RN).}
