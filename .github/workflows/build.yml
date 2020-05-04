@@ -18,8 +18,13 @@ jobs:
           compiler: all
           args: all
           extra_system_packages: dist
-      - name: publish
+      - name: publish dist-archive
         uses: actions/upload-artifact@v2
         with:
           name: dist-archive
           path: showexpl*.zip
+      - name: publish showexpl.sty
+        uses: actions/upload-artifact@v2
+        with:
+          name: showexpl.sty
+          path: showexpl.sty
