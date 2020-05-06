@@ -22,7 +22,7 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
 %<package>\ProvidesPackage{showexpl}
 %<*package>
-    [2020/05/04 v0.3p Typesetting example code (RN)]
+    [2020/05/06 v0.3q Typesetting example code (RN)]
 %</package>
 %
 %<*driver>
@@ -39,7 +39,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{880}
+% \CheckSum{893}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -696,20 +696,33 @@
         \fi
       \fi
       \let\SX@lst@Init=\lst@Init
-%    \end{macrocode}      
+%    \end{macrocode}
+%  \changes{v0.3p}{2020/05/04}{Better handling of floats (RN).}
+%  \changes{v0.3q}{2020/05/06}{Floats should always be numbered 0 (RN).}      
 %  Prevents float environments from floating. This is not enough for floating
 %  listing environments! Why?
-%  \changes{v0.3p}{2020/05/04}{Better handling of floats (RN).}
 %    \begin{macrocode}
-      \def\@xfloat##1[##2]{\@float@HH{##1}[H]}%
+      \edef\SX@save@cnt{\arabic\@captype}% 
+      \def\@xfloat##1[##2]{%
+        \def\@captype{##1}%
+        \setcounter\@captype{-1}%
+        \@float@HH{##1}[H]}%
 %    \end{macrocode}
 %  Special handling of floating listing environments.
 %    \begin{macrocode}
       \def\lst@Init{%
         \let\lst@float=\relax
+        \setcounter\@captype{-1}%
         \SX@lst@Init
       }
+%    \end{macrocode}
+%  Typeset the Code.
+%    \begin{macrocode}
       \SX@tempb{\SX@tempa{\SX@codefile}}\par
+%    \end{macrocode}
+%  Restore the regular numbering of floats outside of `LTXexample'. 
+%    \begin{macrocode}
+      \setcounter\@captype{\SX@save@cnt}%
     \endgroup
   \else
     \expandafter\includegraphics\expandafter[\SX@graphicparam]%
