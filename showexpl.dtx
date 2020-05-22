@@ -22,7 +22,7 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
 %<package>\ProvidesPackage{showexpl}
 %<*package>
-    [2020/05/06 v0.3q Typesetting example code (RN)]
+    [2020/05/22 v0.3r Typesetting example code (RN)]
 %</package>
 %
 %<*driver>
@@ -763,7 +763,7 @@
 % \changes{v0.1h}{2005/06/03}{New macro \cmd{\LTXinputExample} (RN).}
 %    \begin{macrocode}
 \newcommand*\LTXinputExample[2][]{%
-  \g@addto@macro\SX@@explpreset{#1,codefile=#2}%
+  \g@addto@macro\SX@@explpreset{float=false,#1,codefile=#2}%
   \SX@put@code@result}%
 %    \end{macrocode}
 % All the default values.
