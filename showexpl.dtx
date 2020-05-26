@@ -22,7 +22,7 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
 %<package>\ProvidesPackage{showexpl}
 %<*package>
-    [2020/05/22 v0.3r Typesetting example code (RN)]
+    [2020/05/26 v0.3r Typesetting example code (RN)]
 %</package>
 %
 %<*driver>
@@ -39,7 +39,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{893}
+% \CheckSum{889}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -702,10 +702,10 @@
 %  Prevents float environments from floating. This is not enough for floating
 %  listing environments! Why?
 %    \begin{macrocode}
-      \edef\SX@save@cnt{\arabic\@captype}% 
       \def\@xfloat##1[##2]{%
-        \def\@captype{##1}%
-        \setcounter\@captype{-1}%
+        \def\@captype{##1}% 
+        \let\refstepcounter=\@gobble
+        \@namedef{the\@captype}{0}%
         \@float@HH{##1}[H]}%
 %    \end{macrocode}
 %  Special handling of floating listing environments.
@@ -722,7 +722,6 @@
 %    \end{macrocode}
 %  Restore the regular numbering of floats outside of `LTXexample'. 
 %    \begin{macrocode}
-      \setcounter\@captype{\SX@save@cnt}%
     \endgroup
   \else
     \expandafter\includegraphics\expandafter[\SX@graphicparam]%
