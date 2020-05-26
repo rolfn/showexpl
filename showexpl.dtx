@@ -328,6 +328,7 @@
   \let\listoftables\relax \let\printindex\relax
   \let\listfiles\relax \let\nofiles\relax
   \let\index\@gobble \let\label\@gobble
+  \let\refstepcounter=\@gobble
   \let\bibliography\@gobble
   \let\pagestyle\@gobble \let\thispagestyle\@gobble
   %%\let\immediate\relax \let\write\@gobbletwo
@@ -704,7 +705,6 @@
 %    \begin{macrocode}
       \def\@xfloat##1[##2]{%
         \def\@captype{##1}% 
-        \let\refstepcounter=\@gobble
         \@namedef{the\@captype}{0}%
         \@float@HH{##1}[H]}%
 %    \end{macrocode}
