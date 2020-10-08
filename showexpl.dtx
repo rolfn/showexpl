@@ -22,7 +22,7 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
 %<package>\ProvidesPackage{showexpl}
 %<*package>
-    [2020/05/26 v0.3q Typesetting example code (RN)]
+    [2020/10/08 v0.3r Typesetting example code (RN)]
 %</package>
 %
 %<*driver>
@@ -318,6 +318,7 @@
 % the user key ``|preset=...|''.
 % \changes{v0.3e}{2006/04/05}{More redefinitions added (RN).}
 % \changes{v0.3p}{2020/05/04}{Remove extra treatment of `figure'/`table' (RN).}
+% \changes{v0.3r}{2020/10/08}{letting \cmd{\refstepcounter} be \cmd{\stepcounter} (RN).}
 %    \begin{macrocode}
 \newcommand*\SX@@preset{%
   \renewcommand\documentclass[2][]{\SX@eat@version}%
@@ -328,7 +329,7 @@
   \let\listoftables\relax \let\printindex\relax
   \let\listfiles\relax \let\nofiles\relax
   \let\index\@gobble \let\label\@gobble
-  \let\refstepcounter=\@gobble
+  \let\refstepcounter=\stepcounter
   \let\bibliography\@gobble
   \let\pagestyle\@gobble \let\thispagestyle\@gobble
   %%\let\immediate\relax \let\write\@gobbletwo
