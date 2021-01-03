@@ -22,7 +22,7 @@
 %<package>\NeedsTeXFormat{LaTeX2e}[1999/12/01]
 %<package>\ProvidesPackage{showexpl}
 %<*package>
-    [2020/10/08 v0.3r Typesetting example code (RN)]
+    [2021/01/03 v0.3s Typesetting example code (RN)]
 %</package>
 %
 %<*driver>
@@ -39,7 +39,7 @@
 %</driver>
 % \fi
 %
-% \CheckSum{889}
+% \CheckSum{897}
 %
 % \CharacterTable
 %  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
@@ -318,7 +318,10 @@
 % the user key ``|preset=...|''.
 % \changes{v0.3e}{2006/04/05}{More redefinitions added (RN).}
 % \changes{v0.3p}{2020/05/04}{Remove extra treatment of `figure'/`table' (RN).}
-% \changes{v0.3r}{2020/10/08}{letting \cmd{\refstepcounter} be \cmd{\stepcounter} (RN).}
+% \changes{v0.3r}{2020/10/08}{letting \cmd{\refstepcounter} be
+%   \cmd{\stepcounter} (RN).}
+% \changes{v0.3s}{2021/01/03}{Special handling of cleveref's
+%   \cmd{\refstepcounter} (RN).}
 %    \begin{macrocode}
 \newcommand*\SX@@preset{%
   \renewcommand\documentclass[2][]{\SX@eat@version}%
@@ -329,7 +332,13 @@
   \let\listoftables\relax \let\printindex\relax
   \let\listfiles\relax \let\nofiles\relax
   \let\index\@gobble \let\label\@gobble
-  \let\refstepcounter=\stepcounter
+  \ifx\csname ver@cleveref.sty\endcsname
+    \renewcommand*\refstepcounter[2][]{%
+      \stepcounter{##2}%
+    }
+  \else
+    \let\refstepcounter=\stepcounter
+  \fi
   \let\bibliography\@gobble
   \let\pagestyle\@gobble \let\thispagestyle\@gobble
   %%\let\immediate\relax \let\write\@gobbletwo
